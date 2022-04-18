@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>lego_spike_description</name>
+  <version>0.0.0</version>
+  <description>URDF macros and meshes for Lego Spike and Lego Mindstorms Robot Inventor parts</description>
+
+  <maintainer email="civerachb@clearpathrobotics.com">Chris Iverach-Brereton</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>xacro</depend>
+
+  <export>
+  </export>
+</package>
