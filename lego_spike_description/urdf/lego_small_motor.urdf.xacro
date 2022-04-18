@@ -4,8 +4,9 @@
     <link name="${name}_link">
       <visual>
         <geometry>
-          <mesh filename="package://lego_spike_description/meshes/SpikePrimeSmallMotor.dae" scale="0.01 0.01 0.01"/>
+          <mesh filename="package://lego_spike_description/meshes/SpikePrimeSmallMotor.stl" scale="0.0004 0.0004 0.0004"/>
         </geometry>
+        <material name="lego_white" />
         <origin xyz="0 0.005 0" rpy="1.5707963267948966 0 1.5707963267948966" />
       </visual>
       <!-- TODO: collision -->
