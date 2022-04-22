@@ -1,0 +1,4 @@
+# Lego Mindstorms RI Hub (51515)
+# Other attributes may be necessary for Spike Prime hub, alternate firmware versions, etc...
+# I can only test with the hardware I have available.
+SUBSYSTEM=="tty", ATTRS{manufacturer}=="LEGO System A/S", ATTRS{idProduct}=="0010", ATTRS{idVendor}=="0694", MODE="0666", GROUP="dialout", SYMLINK+="lego"

@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+"""
+Starts the serial interface
+"""
+
+import rospy
+from lego_spike_interface.SerialInterface import SerialInterface
+
+rospy.init_node('lego_spike_serial_interface')
+
+interface = SerialInterface()
+interface.open()
+interface.close()
