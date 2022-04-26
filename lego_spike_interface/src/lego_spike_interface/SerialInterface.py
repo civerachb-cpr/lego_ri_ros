@@ -11,6 +11,14 @@ The interface operates at 115200 baud 8N1 on the port specified.
 import serial
 import rospy
 
+from lego_spike_msgs.msg import Color
+from lego_spike_msgs.msg import ColorSensors
+from lego_spike_msgs.msg import DistanceSensors
+from sensor_msgs.msg import Imu
+from sensor_msgs.msg import JointState
+from std_msgs.msg import Header
+from std_msgs.msg import Float32
+
 from catkin.find_in_workspaces import find_in_workspaces as catkin_find
 
 ctrl_c = b"\x03"
@@ -29,9 +37,15 @@ class SerialInterface:
             timeout=1
         )
 
-        # queued messages going each way
-        self.tx_queue = []
-        self.rx_queue = []
+        # TODO parameterize all these
+        self.imu_frame_id = 'lego_hub_imu_link'
+
+
+        self.imu_pub = rospy.Publisher('imu/data', Imu, queue_size=1)
+        self.joint_state_pub = rospy.Publisher('joint_states', JointState, queue_size=1)
+        self.color_sensors_pub = rospy.Publisher('colors', ColorSensors, queue_size=1)
+        self.distance_sensors_pub = rospy.Publisher('distance', DistanceSensors, queue_size=1)
+
 
     def open(self):
         if self.port.isOpen():
@@ -87,12 +101,69 @@ class SerialInterface:
         rospy.loginfo('Lego Hub main sent!')
 
     def run(self):
-        rate = rospy.Rate(10)
+        # our main sensor-reading loop runs at 10Hz
+        # TODO: can we go faster?
+        rate = rospy.Rate(50)
 
         while not rospy.is_shutdown():
-            data = self.port.readline()
-            rospy.loginfo(data)
-
+            data = self.port.readline().decode('utf-8')
+            try:
+                d = eval(data)
+                self.send_msgs(d)
+            except Exception as err:
+                rospy.logerr(err)
+                rospy.logerr(data)
             rate.sleep()
 
+        # cancel when we're done
         self.port.write(ctrl_c)
+
+    def send_msgs(self, data):
+        hdr = Header()
+        hdr.stamp = rospy.Time.now()
+        hdr.frame_id = self.imu_frame_id
+        imu_msg = Imu()
+        imu_msg.header = hdr
+        imu_msg.angular_velocity.x = data['imu']['angular']['x']
+        imu_msg.angular_velocity.y = data['imu']['angular']['y']
+        imu_msg.angular_velocity.z = data['imu']['angular']['z']
+        imu_msg.linear_acceleration.x = data['imu']['linear']['x']
+        imu_msg.linear_acceleration.y = data['imu']['linear']['y']
+        imu_msg.linear_acceleration.z = data['imu']['linear']['z']
+
+        hdr = Header()
+        hdr.stamp = rospy.Time.now()
+        js = JointState()
+        js.header = hdr
+        js.name = []
+        js.position = []
+        js.effort = []
+        js.velocity = []
+        clr = ColorSensors()
+        clr.name = []
+        dst = DistanceSensors()
+        dst.name = []
+        dst.data = []
+
+        for device in data['devices']:
+            if device['type'] == 'motor':
+                js.name.append('motor_{0}_wheel_link'.format(device['port']))
+                js.position.append(device['data']['position'])
+                js.velocity.append(device['data']['speed'])
+                js.effort.append(0.0)  # TODO?
+            elif device['type'] == 'color':
+                clr.name.append('color_{0}'.format(device['port']))
+                c = Color()
+                c.brightness = device['data']['level']
+                c.r = device['data']['rgb']['r']
+                c.g = device['data']['rgb']['g']
+                c.b = device['data']['rgb']['b']
+                clr.data.append(c)
+            elif device['type'] == 'distance':
+                dst.name.append('distance_{0}'.format(device['port']))
+                dst.data.append(device['data'])
+
+        self.imu_pub.publish(imu_msg)
+        self.joint_state_pub.publish(js)
+        self.color_sensors_pub.publish(clr)
+        self.distance_sensors_pub.publish(dst)

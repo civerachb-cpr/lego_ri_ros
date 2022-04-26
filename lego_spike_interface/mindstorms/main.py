@@ -12,9 +12,10 @@ import time
 from math import pi
 
 class Motor:
-    def __init__(self, device, data):
+    def __init__(self, device, data, port):
         self.__device = device
         self.__type = 'motor'
+        self.__port = port
 
     def get(self):
         speed_percent, net_encoder_pos, angle_degrees, speed_deg_per_s = self.__device.get()
@@ -29,9 +30,10 @@ class Motor:
 
 
 class LightSensor:
-    def __init__(self, device, data):
+    def __init__(self, device, data, port):
         self.__device = device
         self.__type='light'
+        self.__port = port
 
     def get(self):
         brightness, idk_wtf_this_is_yet, r, g, b = self.__device.get()
@@ -46,9 +48,10 @@ class LightSensor:
 
 
 class DistanceSensor        :
-    def __init__(self, device, data):
+    def __init__(self, device, data, port):
         self.__device = device
         self.__type='distance'
+        self.__port = port
 
     def get(self):
         raw_data = self.__device.get()
@@ -80,11 +83,11 @@ def enumerate_devices():
         if ports[p] is not None:
             data = ports[p].get()
             if len(data) == 4:
-                devices[p] = Motor(ports[p], data)
+                devices[p] = Motor(ports[p], data, p.lower())
             elif len(data) == 1:
-                devices[p] = DistanceSensor(ports[p], data)
+                devices[p] = DistanceSensor(ports[p], data, p.lower())
             elif len(data) == 5:
-                devices[p] = LightSensor(ports[p], data)
+                devices[p] = LightSensor(ports[p], data, p.lower())
 
     return devices
 
@@ -97,7 +100,8 @@ def read_devices():
         else:
             data.append({
                 'type': dev.__type,
-                'data': dev.get()
+                'data': dev.get(),
+                'port': dev.__port
             })
     return data
 
@@ -117,7 +121,7 @@ def read_gyro():
         }
     }
 
-def read_cmd(nbytes=32, timeout=100):
+def read_cmd(nbytes=32, timeout=20): #timeout=100):
     data = port.recv(nbytes, timeout=timeout)
     data = data.decode('utf-8')
     return data
@@ -127,8 +131,9 @@ devices = enumerate_devices()
 
 while True:
     cmd = read_cmd()
+    timed_out = True
     if len(cmd) > 0:
-        pass
+        timed_out = False
 
     data = {
         'imu': read_gyro(),
@@ -137,4 +142,6 @@ while True:
 
     print(data)
 
-    time.sleep_ms(100)
+    # delay to keep the ~50Hz throughput
+    if not timed_out:
+        time.sleep_ms(20)

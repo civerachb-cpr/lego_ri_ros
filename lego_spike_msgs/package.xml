@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>lego_spike_interface</name>
+  <name>lego_spike_msgs</name>
   <version>0.0.0</version>
-  <description>Serial-based interface for communicating with the Lego Mindstorms RI + Lego Spike Prime hub</description>
+  <description>ROS messages used with the Lego Spike and Lego Mindstorms hub</description>
 
   <maintainer email="civerachb@clearpathrobotics.com">Chris Iverach-Brereton</maintainer>
 
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>rospy</depend>
 
-  <depend>lego_spike_msgs</depend>
-  <depend>sensor_msgs</depend>
+  <depend>rospy</depend>
   <depend>std_msgs</depend>
+
+  <exec_depend>message_runtime</exec_depend>
 
   <export>
   </export>
