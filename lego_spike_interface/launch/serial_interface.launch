@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<launch>
+  <arg name="port" default="/dev/lego" />
+  <arg name="baudrate" default="115200" />
+
+  <node name="lego_serial_interface" pkg="lego_spike_interface" type="serial_interface" args="-p $(arg port) -b $(arg baudrate)">
+  </node>
+</launch>

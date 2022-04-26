@@ -14,6 +14,7 @@ import rospy
 from lego_spike_msgs.msg import Color
 from lego_spike_msgs.msg import ColorSensors
 from lego_spike_msgs.msg import DistanceSensors
+from lego_spike_msgs.msg import MotorCfg
 from sensor_msgs.msg import Imu
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Header
@@ -25,80 +26,63 @@ ctrl_c = b"\x03"
 ctrl_e = b"\x05"
 ctrl_d = b"\x04"
 
-class SerialInterface:
-    def __init__(self, port="/dev/lego", baud=115200):
+def goal_pos_callback(data, interface):
+    interface.set_goal_positions(data)
 
-        self.port = serial.Serial(
-            port=port,
-            baudrate=baud,
-            bytesize=serial.EIGHTBITS,
-            parity=serial.PARITY_NONE,
-            stopbits=serial.STOPBITS_ONE,
-            timeout=1
-        )
+def motor_cfg_callback(data, interface):
+    interface.set_motor_config(data)
 
+class LegoInterface:
+    def __init__(self):
         # TODO parameterize all these
         self.imu_frame_id = 'lego_hub_imu_link'
-
 
         self.imu_pub = rospy.Publisher('imu/data', Imu, queue_size=1)
         self.joint_state_pub = rospy.Publisher('joint_states', JointState, queue_size=1)
         self.color_sensors_pub = rospy.Publisher('colors', ColorSensors, queue_size=1)
         self.distance_sensors_pub = rospy.Publisher('distance', DistanceSensors, queue_size=1)
 
+        self.goal_pos_sub = rospy.Subscriber('cmd/goal_position', JointState, goal_pos_callback, self)
+        self.motor_cfg_sub = rospy.Subscriber('cmd/motor_config', MotorCfg, motor_cfg_callback, self)
 
-    def open(self):
-        if self.port.isOpen():
-            rospy.logdebug("port is already open")
-            return
-        try:
-            self.port.open()
-        except serial.SerialException as err:
-            rospy.logerr(err)
-
-    def close(self):
-        if not self.port.isOpen():
-            rospy.logdebug("port is already closed")
-            return
-        try:
-            self.port.close()
-        except Exception as err:
-            rospy.logerr(err)
-
-    def send_main(self):
+    def send_main(self, path=None):
         # to avoid serial corruption in paste-mode send the data one line at a time at 50 Hz
         rate = rospy.Rate(50)
 
         # cancel whatever's running first!
         for i in range(3):
-            self.port.write(ctrl_c)
+            self.write_byte(ctrl_c)
             rate.sleep()
 
         # skip past all the cruft during startup & the initial interpreter lines
         rospy.loginfo("Reading past boot messages...")
-        l = self.port.readline()
-        while not l.decode('utf-8').startswith('>>>'):
-            l = self.port.readline()
-            print(l)
+        l = self.read_line()
+        while not l.startswith('>>>'):
+            l = self.read_line()
+            rospy.logdebug(l)
         rospy.loginfo("Reading past boot interpreter prompt...")
-        while l.decode('utf-8').startswith('>>>'):
-            l = self.port.readline()
-            print(l)
+        while l.startswith('>>>'):
+            l = self.read_line()
+            rospy.logdebug(l)
 
-        path = catkin_find(project='lego_spike_interface', first_match_only=True, path='mindstorms/main.py')[0]
         rospy.loginfo('Sending Lego Hub main at {0}'.format(path))
         file_in = open(path, 'r')
         lines = file_in.readlines()
         file_in.close()
-        self.port.write(ctrl_e)
+        rospy.loginfo("Entering paste mode...")
+        self.write_byte(ctrl_e)
         for l in lines:
-            rospy.logdebug(l.rstrip('\n'))
-            self.port.write(bytes(l, encoding='utf-8'))
-            rate.sleep()
-            self.port.readline()
+            # don't send empty lines
+            check_l = l.rstrip()
+            if len(check_l) > 0:
+                rospy.logdebug(check_l)
+                self.write_line(l)
+                rate.sleep()
+                self.read_line()
 
-        self.port.write(ctrl_d)
-        rospy.loginfo('Lego Hub main sent!')
+        self.write_byte(ctrl_d)
+        rospy.loginfo("Exiting paste mode...")
+        rospy.loginfo("Lego Hub main sent!")
 
     def run(self):
         # our main sensor-reading loop runs at 10Hz
@@ -106,7 +90,7 @@ class SerialInterface:
         rate = rospy.Rate(50)
 
         while not rospy.is_shutdown():
-            data = self.port.readline().decode('utf-8')
+            data = self.read_line()
             try:
                 d = eval(data)
                 self.send_msgs(d)
@@ -151,7 +135,7 @@ class SerialInterface:
                 js.position.append(device['data']['position'])
                 js.velocity.append(device['data']['speed'])
                 js.effort.append(0.0)  # TODO?
-            elif device['type'] == 'color':
+            elif device['type'] == 'light':
                 clr.name.append('color_{0}'.format(device['port']))
                 c = Color()
                 c.brightness = device['data']['level']
@@ -167,3 +151,76 @@ class SerialInterface:
         self.joint_state_pub.publish(js)
         self.color_sensors_pub.publish(clr)
         self.distance_sensors_pub.publish(dst)
+
+    def open(self):
+        rospy.logerr("Not implented by this class")
+
+    def close(self):
+        rospy.logerr("Not implented by this class")
+
+    def read_line(self):
+        rospy.logerr("Not implented by this class")
+
+    def write_line(self, txt):
+        rospy.logerr("Not implented by this class")
+
+    def write_byte(self, ch):
+        rospy.logerr("Not implented by this class")
+
+    def set_goal_positions(self, js):
+        rospy.logwarn("Not implemented yet")
+
+    def set_motor_config(self, cfg):
+        rospy.logwarn("Not implemented yet")
+
+
+class SerialInterface(LegoInterface):
+    def __init__(self, port="/dev/lego", baud=115200):
+        super().__init__()
+
+        self.port = serial.Serial(
+            port=port,
+            baudrate=baud,
+            bytesize=serial.EIGHTBITS,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+            timeout=1
+        )
+
+
+    def open(self):
+        if self.port.isOpen():
+            rospy.logdebug("port is already open")
+            return
+        try:
+            self.port.open()
+        except serial.SerialException as err:
+            rospy.logerr(err)
+
+    def close(self):
+        if not self.port.isOpen():
+            rospy.logdebug("port is already closed")
+            return
+        try:
+            self.port.close()
+        except Exception as err:
+            rospy.logerr(err)
+
+    def read_line(self):
+        'Reads a single line of text from the micropython interpreter'
+        l = self.port.readline()
+        l = l.decode('utf-8')
+        return l
+
+    def write_line(self, txt):
+        'Writes a single line of text with newline terminator to the micropython interpreter'
+        data = bytes(txt, encoding='utf-8')
+        self.port.write(data)
+
+    def write_byte(self, ch):
+        'Writes a single character to the micropython interpreter'
+        self.port.write(ch)
+
+    def send_main(self):
+        path = catkin_find(project='lego_spike_interface', first_match_only=True, path='mindstorms/main.py')[0]
+        super().send_main(path=path)
