@@ -26,7 +26,7 @@
   </xacro:lego_small_motor>
 
   <include filename="$(find lego_spike_description)/urdf/lego_large_motor.urdf.xacro" />
-  <xacro:lego_small_motor name="large_motor" parent="mid_mount">
+  <xacro:lego_large_motor name="large_motor" parent="mid_mount">
     <origin xyz="-0.2 0 0.1" rpy="0 0 0" />
-  </xacro:lego_small_motor>
+  </xacro:lego_large_motor>
 </robot>
