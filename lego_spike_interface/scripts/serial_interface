@@ -3,6 +3,7 @@
 Starts the serial interface
 """
 
+import sys
 import rospy
 from lego_spike_interface.SerialInterface import SerialInterface
 
@@ -10,4 +11,7 @@ rospy.init_node('lego_spike_serial_interface')
 
 interface = SerialInterface()
 interface.open()
+interface.send_main()
+interface.run()
 interface.close()
+sys.exit(0)
