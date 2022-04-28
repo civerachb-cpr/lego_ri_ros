@@ -9,7 +9,6 @@ add_message_files(
   ColorSensors.msg
   DistanceSensors.msg
   LightPattern.msg
-  MotorCfg.msg
 )
 
 generate_messages(
