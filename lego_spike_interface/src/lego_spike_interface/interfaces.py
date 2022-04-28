@@ -197,14 +197,12 @@ class LegoInterface:
         rospy.logerr("Not implented by this class")
 
     def set_goal_positions(self, js):
-        rospy.logwarn(js)
         param = {
             'name': list(js.name),
             'position': list(js.position),
             'velocity': list(js.velocity),
             'effort': list(js.effort)
         }
-        rospy.logwarn(param)
         self.command_queue.append(CommandList.ACTION_MOTORS, param)
 
     def set_lights(self, pattern):
