@@ -44,9 +44,19 @@ Sensor data from the Hub is published on a variety of topics:
 - `/joint_states` -- Joint positions and velocities of all connected motors
 
 Topics under the `cmd` namespace are used for sending instructions to the Hub:
-- `/cmd/goal_position` -- move the joints to the specified positions
+- `/cmd/goal_position` -- move the joints to the specified positions or at the specified speeds
 - `/cmd/lights` -- send a 25-item row-major array to be displayed on the LED grid. Values should be brightness levels 0-9
-- `/cmd/motor_config` -- not currently implemented, but will eventually be used to change between continuous and angle-limited motor configurations
+
+The Lego motors provide both servo-like position control, operating from -180 to 180 degrees, or continuous, wheel-like
+drive.  Both modes are suported by the `cmd/goal_position` topic:
+
+- to move the motor to a specific angle, set the position variable to the desired angle, the effort to 1.0, and speed to 0.0
+- to move the motor continuously at a specific speed, set set the speed to the desired speed, and the effort to 1.0. The position value is ignored
+- to float the motor set the effort to 0.0. The position and speed will be ignored
+- to lock the motor, set the effort to -1.0
+
+Note that the speed is expressed as a [-1, 1] value indicating the percentage of maximum design speed; the actual maximum
+speed appears to be undocumented, but if I ever figure it out I'll change it to use real units.
 
 Currently only the position value of `cmd/goal_position` is used; effort and velocity must be set, but are ignored by
 the underlying message-handler.  Motor names should begin with `motor_{a|b|c|d|e|f}` according to the port they are

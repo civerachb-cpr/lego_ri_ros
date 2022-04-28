@@ -32,6 +32,8 @@ class Motor:
         self.__type = 'motor'
         self.__port = port
 
+        self.__motor.float()
+
     def recalibrate_zero(self):
         "The zero position is calculated based on the angle when the motor powers-on. Recalculate so zero is actually zero"
         speed_percent, net_encoder_pos, angle_degrees, speed_deg_per_s = self.__motor.get()
@@ -40,12 +42,23 @@ class Motor:
         speed_percent, net_encoder_pos, angle_degrees, speed_deg_per_s = self.__device.get()
 
         angle_rad = angle_degrees * pi / 180.0
-        speed_rad_per_s = speed_deg_per_s * pi / 180
 
         return {
             'position': angle_rad,
-            'speed'   : speed_rad_per_s
+            'speed'   : speed_percent / 100.0
         }
+
+    def process_joint_state(self, position, velocity, effort):
+        "Handle the values from a ROS JointState message"
+        if effort < 0:
+            self.__motor.hold()
+        elif effort == 0:
+            self.float()
+        else:
+            if velocity == 0:
+                self.move_to_position(position)
+            else:
+                self.move_at_speed(velocity)
 
     def move_to_position(self, rad):
         # angles must be in the range [-180, 180]
@@ -55,13 +68,29 @@ class Motor:
             deg = deg - 380
         elif deg < -180:
             deg = deg + 360
-            
+
         # run_to_positon will move to the relative position set, which
         # means un-spinning if the motor's been going in circles for a while
         # calculate the current angle offset
         rel_pos = self.__motor.get()[1]
         abs_pos = self.__motor.get()[2]
         self.__motor.run_to_position(rel_pos - abs_pos + deg)
+
+    def move_at_speed(self, speed):
+        "Speed: [-1, 1] as ratio of max power"
+        percent = int(speed * 100)
+        if percent < -100:
+            percent = -100
+        elif percent > 100:
+            percent = 100
+        self.__motor.run_at_speed(percent)
+
+    def float(self):
+        self.__motor.float()
+
+    def hold(self):
+        self.__motor.hold()
+
 
 class LightSensor:
     def __init__(self, device, data, port):
@@ -137,9 +166,7 @@ def read_devices():
     data = []
     for d in devices.keys():
         dev = devices[d]
-        if dev is None:
-            data.append(None)
-        else:
+        if dev is not None:
             data.append({
                 'type': dev.__type,
                 'data': dev.get(),
@@ -175,32 +202,32 @@ def move_motors(goal, errs=[]):
 
         if name.startswith('motor_a'):
             if devices['A'].__type == "motor":
-                devices['A'].move_to_position(position)
+                devices['A'].process_joint_state(position, velocity, effort)
             else:
                 errs.append('no motor connected to port a')
         elif name.startswith('motor_b'):
             if devices['B'].__type == "motor":
-                devices['B'].move_to_position(position)
+                devices['B'].process_joint_state(position, velocity, effort)
             else:
                 errs.append('no motor connected to port b')
         elif name.startswith('motor_c'):
             if devices['C'].__type == "motor":
-                devices['C'].move_to_position(position)
+                devices['C'].process_joint_state(position, velocity, effort)
             else:
                 errs.append('no motor connected to port c')
         elif name.startswith('motor_d'):
             if devices['D'].__type == "motor":
-                devices['D'].move_to_position(position)
+                devices['D'].process_joint_state(position, velocity, effort)
             else:
                 errs.append('no motor connected to port d')
         elif name.startswith('motor_e'):
             if devices['E'].__type == "motor":
-                devices['E'].move_to_position(position)
+                devices['E'].process_joint_state(position, velocity, effort)
             else:
                 errs.append('no motor connected to port e')
         elif name.startswith('motor_f'):
             if devices['F'].__type == "motor":
-                devices['F'].move_to_position(position)
+                devices['F'].process_joint_state(position, velocity, effort)
             else:
                 errs.append('no motor connected to port f')
         else:
@@ -225,8 +252,6 @@ def run_cmds(cmdstr):
 
                 if action == 'lights':
                     set_led_pattern(param)
-                elif action == 'motorcfg':
-                    errs.append('Motor configuration not implemented yet!')
                 elif action == 'motors':
                     move_motors(param, errs)
         else:

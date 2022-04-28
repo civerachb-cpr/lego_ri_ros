@@ -15,7 +15,6 @@ from lego_spike_msgs.msg import Color
 from lego_spike_msgs.msg import ColorSensors
 from lego_spike_msgs.msg import DistanceSensors
 from lego_spike_msgs.msg import LightPattern
-from lego_spike_msgs.msg import MotorCfg
 from sensor_msgs.msg import Imu
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Header
@@ -35,9 +34,6 @@ def goal_pos_callback(data, interface):
 def light_pattern_callback(data, interface):
     interface.set_lights(data)
 
-def motor_cfg_callback(data, interface):
-    interface.set_motor_config(data)
-
 class LegoInterface:
     def __init__(self):
         # TODO parameterize all these
@@ -50,7 +46,6 @@ class LegoInterface:
         self.distance_sensors_pub = rospy.Publisher('distance', DistanceSensors, queue_size=1)
 
         self.goal_pos_sub = rospy.Subscriber('cmd/goal_position', JointState, goal_pos_callback, self)
-        self.motor_cfg_sub = rospy.Subscriber('cmd/motor_config', MotorCfg, motor_cfg_callback, self)
         self.light_pattern_sub = rospy.Subscriber('cmd/lights', LightPattern, light_pattern_callback, self)
 
         self.command_queue = CommandList()
@@ -211,16 +206,6 @@ class LegoInterface:
         }
         rospy.logwarn(param)
         self.command_queue.append(CommandList.ACTION_MOTORS, param)
-
-    def set_motor_config(self, cfg):
-        param = {
-            'name': cfg.name,
-            'drive_mode': cfg.drive_mode,
-            'stop_mode': cfg.stop_mode,
-            'upper_limit': cfg.upper_limit,
-            'lower_limit': cfg.lower_limit
-        }
-        self.command_queue.append(CommandList.ACTION_MOTOR_CONFIG, param)
 
     def set_lights(self, pattern):
         self.command_queue.append(CommandList.ACTION_LIGHTS, pattern.pattern)
