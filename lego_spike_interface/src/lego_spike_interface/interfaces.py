@@ -117,17 +117,15 @@ class LegoInterface:
                 data = eval(datastr)
                 if len(data['err']) > 0:
                     for e in data['err']:
-                        rospy.logerr('Error from hub: {0}'.format(e))
+                        rospy.logerr('Error in response from hub: {0}'.format(e))
+
                 self.send_ros_msgs(data)
 
                 if len(self.command_queue) > 0:
                     self.command_queue.transmit(self)
 
             except Exception as err:
-                rospy.logerr("+++++ START ERROR reading hub data +++++")
-                rospy.logerr("Message: {0}".format(err))
-                rospy.logerr("Raw data: >{0}<".format(datastr))
-                rospy.logerr("+++++ END ERROR reading hub data +++++")
+                rospy.logerr(err)
             rate.sleep()
 
         # cancel when we're done
@@ -204,10 +202,25 @@ class LegoInterface:
         rospy.logerr("Not implented by this class")
 
     def set_goal_positions(self, js):
-        rospy.logwarn("Not implemented yet")
+        rospy.logwarn(js)
+        param = {
+            'name': list(js.name),
+            'position': list(js.position),
+            'velocity': list(js.velocity),
+            'effort': list(js.effort)
+        }
+        rospy.logwarn(param)
+        self.command_queue.append(CommandList.ACTION_MOTORS, param)
 
     def set_motor_config(self, cfg):
-        rospy.logwarn("Not implemented yet")
+        param = {
+            'name': cfg.name,
+            'drive_mode': cfg.drive_mode,
+            'stop_mode': cfg.stop_mode,
+            'upper_limit': cfg.upper_limit,
+            'lower_limit': cfg.lower_limit
+        }
+        self.command_queue.append(CommandList.ACTION_MOTOR_CONFIG, param)
 
     def set_lights(self, pattern):
         self.command_queue.append(CommandList.ACTION_LIGHTS, pattern.pattern)

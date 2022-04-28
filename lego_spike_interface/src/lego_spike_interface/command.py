@@ -9,6 +9,7 @@ from threading import Lock
 class CommandList:
     ACTION_LIGHTS='lights'
     ACTION_MOTORS='motors'
+    ACTION_MOTOR_CONFIG='motorcfg'
 
     def __init__(self, actions=[], parameters=[]):
         self.actions = actions

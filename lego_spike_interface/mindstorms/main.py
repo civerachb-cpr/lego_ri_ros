@@ -26,8 +26,9 @@ def set_led_pattern(pattern):
         hub.display.pixel(x, y, gamma)
 
 class Motor:
-    def __init__(self, device, data, port):
+    def __init__(self, device, motor, data, port):
         self.__device = device
+        self.__motor = motor
         self.__type = 'motor'
         self.__port = port
 
@@ -42,6 +43,9 @@ class Motor:
             'speed'   : speed_rad_per_s
         }
 
+    def move_to_position(self, rad):
+        deg = rad * 180.0 / pi
+        self.__motor.run_to_position(deg)
 
 class LightSensor:
     def __init__(self, device, data, port):
@@ -83,6 +87,14 @@ def enumerate_devices():
         'E': hub.port.E.device,
         'F': hub.port.F.device
     }
+    motors = {
+        'A': hub.port.A.motor,
+        'B': hub.port.B.motor,
+        'C': hub.port.C.motor,
+        'D': hub.port.D.motor,
+        'E': hub.port.E.motor,
+        'F': hub.port.F.motor
+    }
 
     devices = {
         'A': None,
@@ -97,7 +109,7 @@ def enumerate_devices():
         if ports[p] is not None:
             data = ports[p].get()
             if len(data) == 4:
-                devices[p] = Motor(ports[p], data, p.lower())
+                devices[p] = Motor(ports[p], motors[p], data, p.lower())
             elif len(data) == 1:
                 devices[p] = DistanceSensor(ports[p], data, p.lower())
             elif len(data) == 5:
@@ -138,6 +150,46 @@ def read_gyro():
 def read_temperature():
     return hub.temperature()
 
+def move_motors(goal, errs=[]):
+    for i in range(len(goal['name'])):
+        name = goal['name'][i]
+        position = goal['position'][i]
+        velocity = goal['velocity'][i]
+        effort = goal['effort'][i]
+
+        if name.startswith('motor_a'):
+            if devices['A'].__type == "motor":
+                devices['A'].move_to_position(position)
+            else:
+                errs.append('no motor connected to port a')
+        elif name.startswith('motor_b'):
+            if devices['B'].__type == "motor":
+                devices['B'].move_to_position(position)
+            else:
+                errs.append('no motor connected to port b')
+        elif name.startswith('motor_c'):
+            if devices['C'].__type == "motor":
+                devices['C'].move_to_position(position)
+            else:
+                errs.append('no motor connected to port c')
+        elif name.startswith('motor_d'):
+            if devices['D'].__type == "motor":
+                devices['D'].move_to_position(position)
+            else:
+                errs.append('no motor connected to port d')
+        elif name.startswith('motor_e'):
+            if devices['E'].__type == "motor":
+                devices['E'].move_to_position(position)
+            else:
+                errs.append('no motor connected to port e')
+        elif name.startswith('motor_f'):
+            if devices['F'].__type == "motor":
+                devices['F'].move_to_position(position)
+            else:
+                errs.append('no motor connected to port f')
+        else:
+            errs.append('unknown motor name: {0}'.format(name))
+
 def read_cmd():
     data = port.readline()
     if data is not None:
@@ -155,13 +207,16 @@ def run_cmds(cmdstr):
                 action = cmds['actions'][i]
                 param = cmds['parameters'][i]
 
-                errs.append('action: {0}, param: {1}'.format(action, param))
                 if action == 'lights':
                     set_led_pattern(param)
+                elif action == 'motorcfg':
+                    errs.append('Motor configuration not implemented yet!')
+                elif action == 'motors':
+                    move_motors(param, errs)
         else:
             errs.append('Action/Parameter length mismatch')
     except Exception as e:
-        errs.append(str(e))
+        errs.append('Exception raised in run_cmds: {0}'.format(e))
     return errs
 
 ################################################################################
