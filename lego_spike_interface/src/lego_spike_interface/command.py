@@ -40,7 +40,6 @@ class CommandList:
     def transmit(self, interface):
         self.mutex.acquire()
         if len(self) > 0:
-            rospy.logwarn(self)
             interface.write_line(str(self))
             # clear, but we already have the lock!
             self.actions = []
