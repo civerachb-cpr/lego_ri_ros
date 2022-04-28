@@ -69,31 +69,73 @@ speed appears to be undocumented, but if I ever figure it out I'll change it to 
 
 Currently only the position value of `cmd/goal_position` is used; effort and velocity must be set, but are ignored by
 the underlying message-handler.  Motor names should begin with `motor_{a|b|c|d|e|f}` according to the port they are
-attached to
+attached to.  Multiple motors can be set, but the examples below just show a single one for clarity:
 
-Example of setting 4 motors to zero:
+Set a motor to the zero position:
 ```
-$ rostopic pub /cmd/goal_position sensor_msgs/JointState "header:
-  seq: 0
-  stamp: {secs: 0, nsecs: 0}
-  frame_id: ''
-name: ['motor_a_wheel_link', 'motor_b_wheel_link', 'motor_c_wheel_link', 'motor_d_wheel_link']
-position: [0, 0, 0, 0]
-velocity: [0, 0, 0, 0]
-effort: [0, 0, 0, 0]" -1
+$ rostopic pub /cmd/goal_position sensor_msgs/JointState "name: ['motor_a_wheel_joint']
+position: [0]
+velocity: [0]
+effort: [1]" -1
 ```
 
-Example of setting each motor to a different position:
+Turn a motor to 90 degrees:
+Set a motor to the zero position:
 ```
-$ rostopic pub /cmd/goal_position sensor_msgs/JointState "header:
-  seq: 0
-  stamp: {secs: 0, nsecs: 0}
-  frame_id: ''
-name: ['motor_a_wheel_link', 'motor_b_wheel_link', 'motor_c_wheel_link', 'motor_d_wheel_link']
-position: [$(deg2rad 45), $(deg2rad 90), $(deg2rad -90), $(deg2rad -45)]
+$ rostopic pub /cmd/goal_position sensor_msgs/JointState "name: ['motor_a_wheel_joint']
+position: [$(deg2rad 90)]
+velocity: [0]
+effort: [1]" -1
+```
+
+Rotate a motor continually at 20% of top speed:
+```
+$ rostopic pub /cmd/goal_position sensor_msgs/JointState "name: ['motor_a_wheel_joint']
+position: [0]
+velocity: [0.2]
+effort: [1]" -1
+```
+
+Float the motor (parks it, but you can still turn it by hand)
+```
+$ rostopic pub /cmd/goal_position sensor_msgs/JointState "name: ['motor_a_wheel_joint']
+position: [0]
+velocity: [0]
+effort: [0]" -1
+```
+
+Actively hold the motor at its current position:
+```
+$ rostopic pub /cmd/goal_position sensor_msgs/JointState "name: ['motor_a_wheel_joint']
+position: [0]
+velocity: [0]
+effort: [-1]" -1
+```
+
+Example of setting 4 motors to different angles:
+```
+$ rostopic pub /cmd/goal_position sensor_msgs/JointState "name: ['motor_a_wheel_joint', 'motor_b_wheel_joint', 'motor_c_wheel_joint', motor_d_wheel_joint]
+position: [$(deg2rad 90), $(deg2rad 45), $(deg2rad 0), $(deg2rad -45)]
 velocity: [0, 0, 0, 0]
-effort: [0, 0, 0, 0]" -1
+effort: [1, 1, 1, 1]" -1
 ```
+
+Setting motors A and B to move to 90, motor C to spin one direction, and motor D the other:
+```
+$ rostopic pub /cmd/goal_position sensor_msgs/JointState "name: ['motor_a_wheel_joint', 'motor_b_wheel_joint', 'motor_c_wheel_joint', motor_d_wheel_joint]
+position: [$(deg2rad 90), $(deg2rad 90), 0, 0]
+velocity: [0, 0, 0.3, -0.1]
+effort: [1, 1, 1, 1]" -1
+```
+
+Hold motor A, float motor B, spin motor C, move motor D to -45 degrees:
+```
+$ rostopic pub /cmd/goal_position sensor_msgs/JointState "name: ['motor_a_wheel_joint', 'motor_b_wheel_joint', 'motor_c_wheel_joint', motor_d_wheel_joint]
+position: [0, 0, 0, $(deg2rad -45)]
+velocity: [0, 0, 0.5, 0]
+effort: [-1, 0, 1, 1]" -1
+```
+
 
 Sources
 ---------
