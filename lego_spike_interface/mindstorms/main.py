@@ -32,6 +32,10 @@ class Motor:
         self.__type = 'motor'
         self.__port = port
 
+    def recalibrate_zero(self):
+        "The zero position is calculated based on the angle when the motor powers-on. Recalculate so zero is actually zero"
+        speed_percent, net_encoder_pos, angle_degrees, speed_deg_per_s = self.__motor.get()
+
     def get(self):
         speed_percent, net_encoder_pos, angle_degrees, speed_deg_per_s = self.__device.get()
 
@@ -44,8 +48,13 @@ class Motor:
         }
 
     def move_to_position(self, rad):
+        # run_to_positon will move to the relative position set, which
+        # means un-spinning if the motor's been going in circles for a while
+        # calculate the current angle offset
+        rel_pos = self.__motor.get()[1]
+        abs_pos = self.__motor.get()[2]
         deg = rad * 180.0 / pi
-        self.__motor.run_to_position(deg)
+        self.__motor.run_to_position(rel_pos - abs_pos + deg)
 
 class LightSensor:
     def __init__(self, device, data, port):

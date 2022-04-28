@@ -14,6 +14,8 @@ PC.  No ROS-specific code runs on the Mindstorms Hub.
 
 Note that the Lego Spike Prime and Lego Mindstorms hardware is interchangeable.
 
+Only one hub per PC is currently supported, though that may change in the future.
+
 
 Usage
 --------
@@ -46,6 +48,11 @@ Topics under the `cmd` namespace are used for sending instructions to the Hub:
 - `/cmd/lights` -- send a 25-item row-major array to be displayed on the LED grid. Values should be brightness levels 0-9
 - `/cmd/motor_config` -- not currently implemented, but will eventually be used to change between continuous and angle-limited motor configurations
 
+Currently only the position value of `cmd/goal_position` is used; effort and velocity must be set, but are ignored by
+the underlying message-handler.  Motor names should begin with `motor_{a|b|c|d|e|f}` according to the port they are
+attached to
+
+Example of setting 4 motors to zero:
 
 Sources
 ---------
