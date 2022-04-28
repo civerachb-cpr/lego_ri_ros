@@ -96,3 +96,4 @@ The following links contain useful information for working with the Lego Mindsto
 - Lego Mindstorms Hub API https://lego.github.io/MINDSTORMS-Robot-Inventor-hub-API
 - Lego Hub technical specs https://le-www-live-s.legocdn.com/sc/media/files/support/spike-prime/techspecs_techniclargehub-fba3b469ecb9eaafbde5f24d34ba090e.pdf
 - Robot Inventor Tools https://github.com/ckumpe/robot-inventor-tools
+- Additional useful examples: https://antonsmindstorms.com/2021/01/14/advanced-undocumented-python-in-spike-prime-and-mindstorms-hubs/
