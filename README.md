@@ -53,6 +53,28 @@ the underlying message-handler.  Motor names should begin with `motor_{a|b|c|d|e
 attached to
 
 Example of setting 4 motors to zero:
+```
+$ rostopic pub /cmd/goal_position sensor_msgs/JointState "header:
+  seq: 0
+  stamp: {secs: 0, nsecs: 0}
+  frame_id: ''
+name: ['motor_a_wheel_link', 'motor_b_wheel_link', 'motor_c_wheel_link', 'motor_d_wheel_link']
+position: [0, 0, 0, 0]
+velocity: [0, 0, 0, 0]
+effort: [0, 0, 0, 0]" -1
+```
+
+Example of setting each motor to a different position:
+```
+$ rostopic pub /cmd/goal_position sensor_msgs/JointState "header:
+  seq: 0
+  stamp: {secs: 0, nsecs: 0}
+  frame_id: ''
+name: ['motor_a_wheel_link', 'motor_b_wheel_link', 'motor_c_wheel_link', 'motor_d_wheel_link']
+position: [$(deg2rad 45), $(deg2rad 90), $(deg2rad -90), $(deg2rad -45)]
+velocity: [0, 0, 0, 0]
+effort: [0, 0, 0, 0]" -1
+```
 
 Sources
 ---------

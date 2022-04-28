@@ -48,12 +48,19 @@ class Motor:
         }
 
     def move_to_position(self, rad):
+        # angles must be in the range [-180, 180]
+        # otherwise the motor goes around the long way
+        deg = rad * 180.0 / pi
+        if deg > 180:
+            deg = deg - 380
+        elif deg < -180:
+            deg = deg + 360
+            
         # run_to_positon will move to the relative position set, which
         # means un-spinning if the motor's been going in circles for a while
         # calculate the current angle offset
         rel_pos = self.__motor.get()[1]
         abs_pos = self.__motor.get()[2]
-        deg = rad * 180.0 / pi
         self.__motor.run_to_position(rel_pos - abs_pos + deg)
 
 class LightSensor:
