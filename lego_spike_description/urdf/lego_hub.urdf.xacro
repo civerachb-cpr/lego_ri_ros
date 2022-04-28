@@ -29,7 +29,7 @@
       <parent link="${name}_link" />
       <child link="${name}_imu_link" />
       <!-- TODO: exact IMU position -->
-      <origin xyz="0 0 0" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 0 1.57079" />
     </joint>
   </xacro:macro>
 </robot>

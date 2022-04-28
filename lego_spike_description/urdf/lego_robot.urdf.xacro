@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<robot name="lego_mindstorms" xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_hub.urdf.xacro" />
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_base_plate.urdf.xacro" />
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_small_motor.urdf.xacro" />
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_distance_sensor.urdf.xacro" />
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_color_sensor.urdf.xacro" />
+
+  <link name="base_link" />
+
+  <xacro:lego_base_plate name="base_plate" parent="base_link">
+    <origin xyz="0.016 -0.016 0" rpy="0 0 1.57079" />
+  </xacro:lego_base_plate>
+
+  <xacro:lego_hub name="lego_hub" parent="base_link">
+    <origin xyz="0.1 0 0" rpy="0 0 0" />
+  </xacro:lego_hub>
+
+  <xacro:lego_small_motor name="motor_a" parent="base_link">
+    <origin xyz="0 0.032 0.008" rpy="0 0 3.14150" />
+  </xacro:lego_small_motor>
+  <xacro:lego_small_motor name="motor_b" parent="base_link">
+    <origin xyz="0 -0.064 0.008" rpy="0 0 3.14150" />
+  </xacro:lego_small_motor>
+  <xacro:lego_small_motor name="motor_c" parent="base_link">
+    <origin xyz="0 0 0.008" rpy="0 0 3.14150" />
+  </xacro:lego_small_motor>
+  <xacro:lego_small_motor name="motor_d" parent="base_link">
+    <origin xyz="0 -0.032 0.008" rpy="0 0 3.14150" />
+  </xacro:lego_small_motor>
+
+  <xacro:lego_distance_sensor name="distance_e" parent="base_link">
+    <origin xyz="-0.016 0.054 0.038" rpy="1.57079 0 3.14150" />
+  </xacro:lego_distance_sensor>
+
+  <xacro:lego_color_sensor name="color_f" parent="motor_b_wheel_link">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:lego_color_sensor>
+</robot>

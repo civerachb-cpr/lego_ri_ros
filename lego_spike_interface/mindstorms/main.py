@@ -44,8 +44,8 @@ class Motor:
         angle_rad = angle_degrees * pi / 180.0
 
         return {
-            'position': angle_rad,
-            'speed'   : speed_percent / 100.0
+            'position': -angle_rad,
+            'speed'   : -speed_percent / 100.0
         }
 
     def process_joint_state(self, position, velocity, effort):
@@ -74,7 +74,7 @@ class Motor:
         # calculate the current angle offset
         rel_pos = self.__motor.get()[1]
         abs_pos = self.__motor.get()[2]
-        self.__motor.run_to_position(rel_pos - abs_pos + deg)
+        self.__motor.run_to_position(rel_pos - abs_pos - deg)
 
     def move_at_speed(self, speed):
         "Speed: [-1, 1] as ratio of max power"
@@ -83,7 +83,7 @@ class Motor:
             percent = -100
         elif percent > 100:
             percent = 100
-        self.__motor.run_at_speed(percent)
+        self.__motor.run_at_speed(-percent)  # Lego and ROS use opposite rotational directions!
 
     def float(self):
         self.__motor.float()

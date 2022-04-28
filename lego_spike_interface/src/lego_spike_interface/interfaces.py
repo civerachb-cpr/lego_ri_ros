@@ -159,7 +159,7 @@ class LegoInterface:
 
         for device in data['devices']:
             if device['type'] == 'motor':
-                js.name.append('motor_{0}_wheel_link'.format(device['port']))
+                js.name.append('motor_{0}_wheel_joint'.format(device['port']))
                 js.position.append(device['data']['position'])
                 js.velocity.append(device['data']['speed'])
                 js.effort.append(0.0)  # TODO?
