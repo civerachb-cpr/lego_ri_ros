@@ -2,7 +2,14 @@
 <launch>
   <arg name="port" default="/dev/lego" />
   <arg name="baudrate" default="115200" />
+  <arg name="debug" default="false" />
 
-  <node name="lego_serial_interface" pkg="lego_spike_interface" type="serial_interface" args="-p $(arg port) -b $(arg baudrate)">
-  </node>
+  <group if="$(arg debug)">
+    <node name="lego_serial_interface" pkg="lego_spike_interface" type="serial_interface" args="-p $(arg port) -b $(arg baudrate) -v">
+    </node>
+  </group>
+  <group unless="$(arg debug)">
+    <node name="lego_serial_interface" pkg="lego_spike_interface" type="serial_interface" args="-p $(arg port) -b $(arg baudrate)">
+    </node>
+  </group>
 </launch>

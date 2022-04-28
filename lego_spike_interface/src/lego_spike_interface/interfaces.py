@@ -14,11 +14,14 @@ import rospy
 from lego_spike_msgs.msg import Color
 from lego_spike_msgs.msg import ColorSensors
 from lego_spike_msgs.msg import DistanceSensors
+from lego_spike_msgs.msg import LightPattern
 from lego_spike_msgs.msg import MotorCfg
 from sensor_msgs.msg import Imu
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Header
 from std_msgs.msg import Float32
+
+from lego_spike_interface.command import CommandList
 
 from catkin.find_in_workspaces import find_in_workspaces as catkin_find
 
@@ -29,6 +32,9 @@ ctrl_d = b"\x04"
 def goal_pos_callback(data, interface):
     interface.set_goal_positions(data)
 
+def light_pattern_callback(data, interface):
+    interface.set_lights(data)
+
 def motor_cfg_callback(data, interface):
     interface.set_motor_config(data)
 
@@ -38,14 +44,20 @@ class LegoInterface:
         self.imu_frame_id = 'lego_hub_imu_link'
 
         self.imu_pub = rospy.Publisher('imu/data', Imu, queue_size=1)
+        self.temperature_pub = rospy.Publisher('temperature', Float32, queue_size=1)
         self.joint_state_pub = rospy.Publisher('joint_states', JointState, queue_size=1)
         self.color_sensors_pub = rospy.Publisher('colors', ColorSensors, queue_size=1)
         self.distance_sensors_pub = rospy.Publisher('distance', DistanceSensors, queue_size=1)
 
         self.goal_pos_sub = rospy.Subscriber('cmd/goal_position', JointState, goal_pos_callback, self)
         self.motor_cfg_sub = rospy.Subscriber('cmd/motor_config', MotorCfg, motor_cfg_callback, self)
+        self.light_pattern_sub = rospy.Subscriber('cmd/lights', LightPattern, light_pattern_callback, self)
+
+        self.command_queue = CommandList()
 
     def send_main(self, path=None):
+        "Sends main.py to the Lego Hub so it can communicate bidirectionally"
+
         # to avoid serial corruption in paste-mode send the data one line at a time at 50 Hz
         rate = rospy.Rate(50)
 
@@ -71,38 +83,58 @@ class LegoInterface:
         file_in.close()
         rospy.loginfo("Entering paste mode...")
         self.write_byte(ctrl_e)
+        l = self.read_line()
+        while len(l.strip()) > 0:
+            l = self.read_line()
+            rate.sleep()
         for l in lines:
             # don't send empty lines
             check_l = l.rstrip()
             if len(check_l) > 0:
                 rospy.logdebug(check_l)
                 self.write_line(l)
-                rate.sleep()
                 self.read_line()
+                rate.sleep()
+        self.read_line()
 
-        self.write_byte(ctrl_d)
         rospy.loginfo("Exiting paste mode...")
+        self.write_byte(ctrl_d)
+        self.read_line()
+
         rospy.loginfo("Lego Hub main sent!")
 
+
     def run(self):
+        "The main sensor-reading, command-sending loop.  The Lego Hub doesn't support threading, so this is a bit clunky"
+
         # our main sensor-reading loop runs at 10Hz
         # TODO: can we go faster?
         rate = rospy.Rate(50)
 
         while not rospy.is_shutdown():
-            data = self.read_line()
+            datastr = self.read_line()
             try:
-                d = eval(data)
-                self.send_msgs(d)
+                data = eval(datastr)
+                if len(data['err']) > 0:
+                    for e in data['err']:
+                        rospy.logerr('Error from hub: {0}'.format(e))
+                self.send_ros_msgs(data)
+
+                if len(self.command_queue) > 0:
+                    self.command_queue.transmit(self)
+
             except Exception as err:
-                rospy.logerr(err)
-                rospy.logerr(data)
+                rospy.logerr("+++++ START ERROR reading hub data +++++")
+                rospy.logerr("Message: {0}".format(err))
+                rospy.logerr("Raw data: >{0}<".format(datastr))
+                rospy.logerr("+++++ END ERROR reading hub data +++++")
             rate.sleep()
 
         # cancel when we're done
         self.port.write(ctrl_c)
 
-    def send_msgs(self, data):
+    def send_ros_msgs(self, data):
+        "Publish the ROS messages"
         hdr = Header()
         hdr.stamp = rospy.Time.now()
         hdr.frame_id = self.imu_frame_id
@@ -114,6 +146,9 @@ class LegoInterface:
         imu_msg.linear_acceleration.x = data['imu']['linear']['x']
         imu_msg.linear_acceleration.y = data['imu']['linear']['y']
         imu_msg.linear_acceleration.z = data['imu']['linear']['z']
+
+        temperature_msg = Float32()
+        temperature_msg.data = data['temperature']
 
         hdr = Header()
         hdr.stamp = rospy.Time.now()
@@ -148,6 +183,7 @@ class LegoInterface:
                 dst.data.append(device['data'])
 
         self.imu_pub.publish(imu_msg)
+        self.temperature_pub.publish(temperature_msg)
         self.joint_state_pub.publish(js)
         self.color_sensors_pub.publish(clr)
         self.distance_sensors_pub.publish(dst)
@@ -173,10 +209,15 @@ class LegoInterface:
     def set_motor_config(self, cfg):
         rospy.logwarn("Not implemented yet")
 
+    def set_lights(self, pattern):
+        self.command_queue.append(CommandList.ACTION_LIGHTS, pattern.pattern)
+
 
 class SerialInterface(LegoInterface):
-    def __init__(self, port="/dev/lego", baud=115200):
+    """Handles bidirectional communication over the USB virtual com port of the Lego Hub"""
+    def __init__(self, port="/dev/lego", baud=115200, verbose=False):
         super().__init__()
+        self.verbose = verbose
 
         self.port = serial.Serial(
             port=port,
@@ -186,7 +227,6 @@ class SerialInterface(LegoInterface):
             stopbits=serial.STOPBITS_ONE,
             timeout=1
         )
-
 
     def open(self):
         if self.port.isOpen():
@@ -209,7 +249,9 @@ class SerialInterface(LegoInterface):
     def read_line(self):
         'Reads a single line of text from the micropython interpreter'
         l = self.port.readline()
-        l = l.decode('utf-8')
+        l = l.decode('utf-8').rstrip()
+        if self.verbose:
+            rospy.loginfo(l)
         return l
 
     def write_line(self, txt):

@@ -7,9 +7,23 @@ Once per loop it accepts input from STDIN for processing
 """
 
 import hub
-import time
 
 from math import pi
+
+running_pattern = [
+    9,0,7,0,5,
+    0,0,8,0,6,
+    7,8,9,0,7,
+    0,0,0,0,8,
+    5,6,7,8,9
+]
+
+def set_led_pattern(pattern):
+    for px in range(len(pattern)):
+        x = int(px % 5)
+        y = int(px / 5)
+        gamma = pattern[px]
+        hub.display.pixel(x, y, gamma)
 
 class Motor:
     def __init__(self, device, data, port):
@@ -58,7 +72,7 @@ class DistanceSensor        :
         if raw_data[0] == None:
             return -1.0
         else:
-            return raw_data[0] * 0.1  # base device returns cm, convert to m
+            return raw_data[0] * 0.01  # base device returns cm, convert to m
 
 def enumerate_devices():
     ports = {
@@ -121,27 +135,54 @@ def read_gyro():
         }
     }
 
-def read_cmd(nbytes=32, timeout=20): #timeout=100):
-    data = port.recv(nbytes, timeout=timeout)
-    data = data.decode('utf-8')
+def read_temperature():
+    return hub.temperature()
+
+def read_cmd():
+    data = port.readline()
+    if data is not None:
+        data = data.decode('utf-8')
+    else:
+        data = ''
     return data
+
+def run_cmds(cmdstr):
+    errs = []
+    try:
+        cmds = eval(cmdstr)
+        if len(cmds['actions']) == len(cmds['parameters']):
+            for i in range(len(cmds['actions'])):
+                action = cmds['actions'][i]
+                param = cmds['parameters'][i]
+
+                errs.append('action: {0}, param: {1}'.format(action, param))
+                if action == 'lights':
+                    set_led_pattern(param)
+        else:
+            errs.append('Action/Parameter length mismatch')
+    except Exception as e:
+        errs.append(str(e))
+    return errs
+
+################################################################################
+## MAIN
+################################################################################
 
 port = hub.USB_VCP(0)
 devices = enumerate_devices()
 
+set_led_pattern(running_pattern)
 while True:
     cmd = read_cmd()
-    timed_out = True
+    errs = []
     if len(cmd) > 0:
-        timed_out = False
+        errs = run_cmds(cmd)
 
     data = {
         'imu': read_gyro(),
-        'devices': read_devices()
+        'temperature': read_temperature(),
+        'devices': read_devices(),
+        'err': errs
     }
 
     print(data)
-
-    # delay to keep the ~50Hz throughput
-    if not timed_out:
-        time.sleep_ms(20)
