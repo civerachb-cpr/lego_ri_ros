@@ -1,5 +1,7 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_dimensions.urdf.xacro" />
+
   <xacro:macro name="lego_force_sensor" params="port parent *origin">
     <link name="force_${port}_link">
       <visual>

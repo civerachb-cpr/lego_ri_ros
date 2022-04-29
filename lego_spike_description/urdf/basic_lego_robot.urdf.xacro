@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<robot name="lego_mindstorms" xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_materials.urdf.xacro" />
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_hub.urdf.xacro" />
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_base_plate.urdf.xacro" />
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_motor.urdf.xacro" />
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_distance_sensor.urdf.xacro" />
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_color_sensor.urdf.xacro" />
+
+  <link name="base_link" />
+
+  <xacro:lego_base_plate name="base_plate" parent="base_link">
+    <origin xyz="0 0 0" rpy="0 0 1.57079" />
+  </xacro:lego_base_plate>
+
+  <xacro:lego_hub name="lego_hub" parent="base_link">
+    <origin xyz="0.15 0 0" rpy="0 0 0" />
+  </xacro:lego_hub>
+
+  <xacro:lego_motor port="a" parent="base_plate_top_link">
+    <origin xyz="${lego_stud_spacing * 4} 0 0" rpy="0 0 ${pi/2}" />
+  </xacro:lego_motor>
+  <xacro:lego_motor port="b" parent="base_plate_top_link">
+    <origin xyz="-${lego_stud_spacing * 8} 0 0" rpy="0 0 ${pi/2}" />
+  </xacro:lego_motor>
+  <xacro:lego_motor port="c" parent="base_plate_top_link">
+    <origin xyz="0 0 0" rpy="0 0 ${pi/2}" />
+  </xacro:lego_motor>
+  <xacro:lego_motor port="d" parent="base_plate_top_link">
+    <origin xyz="-${lego_stud_spacing * 4} 0 0" rpy="0 0 ${pi/2}" />
+  </xacro:lego_motor>
+
+  <xacro:lego_distance_sensor port="e" parent="base_plate_top_link">
+    <origin xyz="${lego_stud_spacing * 8} ${lego_stud_spacing * 1} ${lego_stud_spacing * 3.5}" rpy="-${pi/2} 0 ${pi/2}" />
+  </xacro:lego_distance_sensor>
+
+  <xacro:lego_color_sensor port="f" parent="motor_b_wheel_link">
+    <origin xyz="0 0 ${lego_stud_spacing * 1.5}" rpy="${pi/2} 0 0" />
+  </xacro:lego_color_sensor>
+</robot>

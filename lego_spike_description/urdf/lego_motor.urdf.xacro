@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_dimensions.urdf.xacro" />
+
+  <!--
+    Standard Lego Mindstorms 51515 motor
+    Motor rotates around the Z axis
+  -->
+  <xacro:macro name="lego_motor" params="port parent *origin">
+    <link name="motor_${port}_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://lego_spike_description/meshes/SpikePrimeMotor.stl" scale="0.0004 0.0004 0.0004"/>
+        </geometry>
+        <material name="lego_white" />
+        <origin xyz="${lego_stud_spacing/2} 0.0045 0" rpy="1.5707963267948966 0 1.5707963267948966" />
+      </visual>
+      <!-- TODO: collision -->
+    </link>
+    <joint name="motor_${port}_joint" type="fixed">
+      <parent link="${parent}" />
+      <child link="motor_${port}_link" />
+      <xacro:insert_block name="origin" />
+    </joint>
+
+    <link name="motor_${port}_wheel_link" />
+    <joint name="motor_${port}_wheel_joint" type="continuous">
+      <parent link="motor_${port}_link" />
+      <child link="motor_${port}_wheel_link" />
+      <origin xyz="0.024 0 0.032" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+    </joint>
+
+    <link name="motor_${port}_axle_link" />
+    <joint name="motor_${port}_axle_joint" type="fixed">
+      <parent link="motor_${port}_wheel_link" />
+      <child link="motor_${port}_axle_link" />
+      <origin xyz="0 0 -${lego_brick_width * 4}" rpy="${pi} 0 0" />
+    </joint>
+  </xacro:macro>
+</robot>

@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:property name="pi" value="3.141592653589793"/>
+
+  <!--
+    Lego nominal dimensions.  These are useful for applying XYZ offsets between components so
+    that they align with the Lego components
+    See https://upload.wikimedia.org/wikipedia/commons/1/1a/Lego_dimensions.svg
+  -->
+  <xacro:property name="lego_stud_spacing"     value="0.0080"/> <!-- center-to-center -->
+  <xacro:property name="lego_brick_height"     value="0.0096"/> <!-- excludes stud -->
+  <xacro:property name="lego_brick_width"      value="0.0078"/> <!-- 1x1 brick side length -->
+  <xacro:property name="lego_plate_height"     value="0.0032"/> <!-- excludes stud -->
+  <xacro:property name="lego_stud_height"      value="0.0017"/>
+</robot>

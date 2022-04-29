@@ -1,5 +1,11 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_dimensions.urdf.xacro" />
+
+  <!--
+    The 11x19 hole lego technic plate included in Lego Mindstorms 51515
+    Model is centered on the middle with the long dimension along the X axis
+  -->
   <xacro:macro name="lego_base_plate" params="name parent *origin">
     <link name="${name}_link">
       <visual>
@@ -7,13 +13,21 @@
           <mesh filename="package://lego_spike_description/meshes/SpikePrimeBasePlate.stl" scale="0.0004 0.0004 0.0004"/>
         </geometry>
         <material name="lego_teal" />
-        <origin xyz="0.004 00.004 0" rpy="1.5707963267948966 0 -1.5707963267948966" />
+        <origin xyz="-${lego_stud_spacing*1.5} -${lego_stud_spacing/2} 0" rpy="1.5707963267948966 0 -1.5707963267948966" />
       </visual>
     </link>
     <joint name="${name}_joint" type="fixed">
       <parent link="${parent}" />
       <child link="${name}_link" />
       <xacro:insert_block name="origin" />
+    </joint>
+
+    <link name="${name}_top_link" />
+    <joint name="${name}_top_joint" type="fixed">
+      <parent link="${name}_link" />
+      <child link="${name}_top_link" />
+      <!-- Height is the width of a standard brick, not the height of a brick! -->
+      <origin xyz="0 0 ${lego_brick_width}" rpy="0 0 0" />
     </joint>
   </xacro:macro>
 </robot>

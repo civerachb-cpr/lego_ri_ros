@@ -6,4 +6,8 @@
   <material name="lego_teal">
     <color rgba="0.0 0.8 0.8 1.0" />
   </material>
+  <material name="lego_yellow">
+    <color rgba="0.8 0.8 0.0 1.0" />
+  </material>
+
 </robot>

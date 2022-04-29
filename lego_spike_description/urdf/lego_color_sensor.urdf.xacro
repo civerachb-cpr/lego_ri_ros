@@ -1,5 +1,11 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_dimensions.urdf.xacro" />
+
+  <!--
+    Lego Mindstorms 51515 color/light sensor.
+    Origin is the center-back near the cable attachment, rounded edges up/down
+  -->
   <xacro:macro name="lego_color_sensor" params="port parent *origin">
     <link name="color_${port}_link">
       <visual>
@@ -7,7 +13,7 @@
           <mesh filename="package://lego_spike_description/meshes/SpikePrimeColorSensor.stl" scale="0.0004 0.0004 0.0004"/>
         </geometry>
         <material name="lego_white" />
-        <origin xyz="0 0 0" rpy="1.5707963267948966 0 1.5707963267948966" />
+        <origin xyz="${lego_stud_spacing} 0 -${lego_stud_spacing * 1.5}" rpy="1.5707963267948966 0 1.5707963267948966" />
       </visual>
       <!-- TODO: collision -->
     </link>

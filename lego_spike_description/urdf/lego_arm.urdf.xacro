@@ -1,0 +1,3 @@
+<?xml version="1.0" ?>
+<robot name="lego_arm" xmlns:xacro="http://wiki.ros.org/xacro">
+</robot>
