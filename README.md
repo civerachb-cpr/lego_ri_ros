@@ -137,6 +137,13 @@ effort: [-1, 0, 1, 1]" -1
 ```
 
 
+Note on Melodic
+-----------------
+
+The Noetic-devel branch has been successfully used on Ubuntu 18.04 with ROS Melodic installed.  You will need to install
+the Python3 ROS libraries using `pip3`, or manually edit the scripts to invoke `python2` instead of `python3`.
+
+
 Sources
 ---------
 
