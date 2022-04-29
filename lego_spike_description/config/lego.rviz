@@ -76,12 +76,7 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        color_f_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        distance_e_link:
+        left_static_finger:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -91,6 +86,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
         lego_hub_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        mobile_fingers:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -147,6 +147,16 @@ Visualization Manager:
           Show Trail: false
           Value: true
         motor_d_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_static_finger:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        yaw_brace:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -168,14 +178,14 @@ Visualization Manager:
           Value: false
         base_plate_top_link:
           Value: false
-        color_f_link:
-          Value: true
-        distance_e_link:
+        left_static_finger:
           Value: true
         lego_hub_imu_link:
           Value: true
         lego_hub_link:
           Value: false
+        mobile_fingers:
+          Value: true
         motor_a_axle_link:
           Value: true
         motor_a_link:
@@ -200,6 +210,10 @@ Visualization Manager:
           Value: false
         motor_d_wheel_link:
           Value: true
+        right_static_finger:
+          Value: true
+        yaw_brace:
+          Value: true
       Marker Scale: 0.10000000149011612
       Name: TF
       Show Arrows: true
@@ -209,29 +223,33 @@ Visualization Manager:
         base_link:
           base_plate_link:
             base_plate_top_link:
-              distance_e_link:
-                {}
-              motor_a_link:
-                motor_a_wheel_link:
-                  motor_a_axle_link:
-                    {}
+              lego_hub_link:
+                lego_hub_imu_link:
+                  {}
               motor_b_link:
                 motor_b_wheel_link:
-                  color_f_link:
-                    {}
                   motor_b_axle_link:
                     {}
-              motor_c_link:
-                motor_c_wheel_link:
-                  motor_c_axle_link:
+                  motor_d_link:
+                    motor_d_wheel_link:
+                      motor_c_link:
+                        motor_c_wheel_link:
+                          left_static_finger:
+                            {}
+                          motor_a_link:
+                            motor_a_wheel_link:
+                              mobile_fingers:
+                                {}
+                              motor_a_axle_link:
+                                {}
+                          motor_c_axle_link:
+                            {}
+                          right_static_finger:
+                            {}
+                      motor_d_axle_link:
+                        {}
+                  yaw_brace:
                     {}
-              motor_d_link:
-                motor_d_wheel_link:
-                  motor_d_axle_link:
-                    {}
-          lego_hub_link:
-            lego_hub_imu_link:
-              {}
       Update Interval: 0
       Value: true
     - Alpha: 0.20000000298023224
@@ -271,25 +289,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.26697656512260437
+      Distance: 0.33489543199539185
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.028844019398093224
-        Y: -0.003892640583217144
-        Z: 0.01615278236567974
+        X: 0.037659261375665665
+        Y: 0.07876919209957123
+        Z: 0.020708415657281876
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.45979738235473633
+      Pitch: 0.4847973585128784
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.8018038272857666
+      Yaw: 2.5418014526367188
     Saved: ~
 Window Geometry:
   Displays:

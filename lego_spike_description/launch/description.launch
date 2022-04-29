@@ -2,21 +2,24 @@
 <launch>
   <arg name="view_model" default="false" />
 
-  <arg name="config" default="basic" />
+  <arg name="config" default="arm" />
   <arg name="env_runner" value="$(eval 'env_run' if not optenv('OS', 'unknown').lower().startswith('windows') else 'env_run.bat')" />
 
+  <group if="$(eval arg('config') == 'arm')">
+    <!-- Simple 4-DOF arm. See instructions/simple_arm.pdf for build guide -->
+    <param name="robot_description"
+      command="$(find lego_spike_description)/scripts/env_run
+               $(find lego_spike_description)/urdf/configs/$(arg config)
+               $(find xacro)/xacro $(find lego_spike_description)/urdf/simple_arm.urdf.xacro" />
+  </group>
   <group if="$(eval arg('config') == 'basic')">
+    <!-- Sensors, motors & hub all connected in a super-basic setup for testing. Useless as an actual robot -->
     <param name="robot_description"
       command="$(find lego_spike_description)/scripts/env_run
                $(find lego_spike_description)/urdf/configs/$(arg config)
                $(find xacro)/xacro $(find lego_spike_description)/urdf/basic_lego_robot.urdf.xacro" />
   </group>
-  <group if="$(eval arg('config') == 'arm')">
-    <param name="robot_description"
-      command="$(find lego_spike_description)/scripts/env_run
-               $(find lego_spike_description)/urdf/configs/$(arg config)
-               $(find xacro)/xacro $(find lego_spike_description)/urdf/lego_arm.urdf.xacro" />
-  </group>
+
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
   <group if="$(arg view_model)">

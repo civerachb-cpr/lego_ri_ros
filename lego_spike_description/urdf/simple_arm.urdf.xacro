@@ -1,0 +1,126 @@
+<?xml version="1.0" ?>
+<robot name="lego_arm" xmlns:xacro="http://wiki.ros.org/xacro">
+  <!-- Simple 4-DOF arm. See instructions/simple_arm.pdf for build guide -->
+
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_materials.urdf.xacro" />
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_hub.urdf.xacro" />
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_base_plate.urdf.xacro" />
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_motor.urdf.xacro" />
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_distance_sensor.urdf.xacro" />
+  <xacro:include filename="$(find lego_spike_description)/urdf/lego_color_sensor.urdf.xacro" />
+
+  <link name="base_link" />
+
+  <xacro:lego_base_plate name="base_plate" parent="base_link">
+    <origin xyz="0 0 0" rpy="0 0 1.57079" />
+  </xacro:lego_base_plate>
+
+  <xacro:lego_hub name="lego_hub" parent="base_plate_top_link">
+    <origin xyz="-${lego_stud_spacing * 6} 0 0" rpy="0 0 -${pi/2}" />
+  </xacro:lego_hub>
+
+  <xacro:lego_motor port="b" parent="base_plate_top_link">
+    <origin xyz="${lego_stud_spacing * 4} ${lego_stud_spacing * 1} 0" />
+  </xacro:lego_motor>
+
+  <xacro:lego_motor port="d" parent="motor_b_wheel_link">
+    <origin xyz="${lego_stud_spacing * 4} ${lego_stud_spacing * 1.5} ${lego_stud_spacing * 2.5}" rpy="${pi/2} 0 0" />
+  </xacro:lego_motor>
+
+  <xacro:lego_motor port="c" parent="motor_d_wheel_link">
+    <origin xyz="-${lego_stud_spacing * 2} -${lego_stud_spacing * 1.5} ${lego_stud_spacing * 1.5}" rpy="-${pi/2} 0 0" />
+  </xacro:lego_motor>
+
+  <xacro:lego_motor port="a" parent="motor_c_wheel_link">
+    <origin xyz="0 -${lego_stud_spacing * 1.5} ${lego_stud_spacing * 2.5}" rpy="-${pi/2} 0 0" />
+  </xacro:lego_motor>
+
+  <!-- Add the static brace to support the pitch motor -->
+  <link name="yaw_brace">
+    <visual>
+      <geometry>
+        <mesh filename="package://lego_spike_description/meshes/yaw_brace.stl" scale="0.0004 0.0004 0.0004"/>
+      </geometry>
+      <material name="lego_black" />
+      <!-- exporting DAE from Stud.io isn't fantastic, and the website I used to convert to STL breaks the scale anyway. Sorry. -->
+      <origin xyz="${lego_stud_spacing * 2 - 0.001} -${lego_stud_spacing / 2 - 0.001} -${lego_stud_spacing - 0.002}" rpy="${pi/2} 0 ${pi/2}" />
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://lego_spike_description/meshes/yaw_brace.stl" scale="0.0004 0.0004 0.0004"/>
+      </geometry>
+      <origin xyz="${lego_stud_spacing * 2 - 0.001} -${lego_stud_spacing / 2 - 0.001} -${lego_stud_spacing - 0.002}" rpy="${pi/2} 0 ${pi/2}" />
+    </collision>
+  </link>
+  <joint name="yaw_brace_joint" type="fixed">
+    <parent link="motor_b_wheel_link" />
+    <child link="yaw_brace" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+
+  <!-- Add the static fingers -->
+  <link name="left_static_finger">
+    <visual>
+      <geometry>
+        <mesh filename="package://lego_spike_description/meshes/static_finger.stl" scale="0.0004 0.0004 0.0004"/>
+      </geometry>
+      <material name="lego_black" />
+      <!-- exporting DAE from Stud.io isn't fantastic, and the website I used to convert to STL breaks the scale anyway. Sorry. -->
+      <origin xyz="${lego_stud_spacing * 3.5} ${lego_stud_spacing * 0.5 + 0.001} 0" rpy="${pi/2} 0 ${pi/2}" />
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://lego_spike_description/meshes/static_finger.stl" scale="0.0004 0.0004 0.0004"/>
+      </geometry>
+      <origin xyz="${lego_stud_spacing * 3.5} ${lego_stud_spacing * 0.5 + 0.001} 0" rpy="${pi/2} 0 ${pi/2}" />
+    </collision>
+  </link>
+  <joint name="left_static_finger_joint" type="fixed">
+    <parent link="motor_c_wheel_link" />
+    <child link="left_static_finger" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+  <link name="right_static_finger">
+    <visual>
+      <geometry>
+        <mesh filename="package://lego_spike_description/meshes/static_finger.stl" scale="0.0004 0.0004 0.0004"/>
+      </geometry>
+      <material name="lego_black" />
+      <!-- exporting DAE from Stud.io isn't fantastic, and the website I used to convert to STL breaks the scale anyway. Sorry. -->
+      <origin xyz="${lego_stud_spacing * 3.5} -${lego_stud_spacing * 1.5 - 0.001} 0" rpy="${pi/2} 0 ${pi/2}" />
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://lego_spike_description/meshes/static_finger.stl" scale="0.0004 0.0004 0.0004"/>
+      </geometry>
+      <origin xyz="${lego_stud_spacing * 3.5} -${lego_stud_spacing * 1.5 - 0.001} 0" rpy="${pi/2} 0 ${pi/2}" />
+    </collision>
+  </link>
+  <joint name="right_static_finger_joint" type="fixed">
+    <parent link="motor_c_wheel_link" />
+    <child link="right_static_finger" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+
+  <!-- Add the mobile fingers -->
+  <link name="mobile_fingers">
+    <visual>
+      <geometry>
+        <mesh filename="package://lego_spike_description/meshes/mobile_fingers.stl" scale="0.0004 0.0004 0.0004"/>
+      </geometry>
+      <material name="lego_black" />
+      <origin xyz="${lego_stud_spacing * 0.5} ${lego_stud_spacing * 2.5} -${lego_stud_spacing * 2}" rpy="${pi/2} -${pi/2} ${pi/2}" />
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://lego_spike_description/meshes/mobile_fingers.stl" scale="0.0004 0.0004 0.0004"/>
+      </geometry>
+      <origin xyz="${lego_stud_spacing * 0.5} ${lego_stud_spacing * 2.5} -${lego_stud_spacing * 2}" rpy="${pi/2} -${pi/2} ${pi/2}" />
+    </collision>
+  </link>
+  <joint name="mobile_finger_joint" type="fixed">
+    <parent link="motor_a_wheel_link" />
+    <child link="mobile_fingers" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+</robot>
