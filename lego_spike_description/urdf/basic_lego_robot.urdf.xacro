@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<robot name="lego_mindstorms" xmlns:xacro="http://wiki.ros.org/xacro">
+<robot name="basic_robot" xmlns:xacro="http://wiki.ros.org/xacro">
   <xacro:include filename="$(find lego_spike_description)/urdf/lego_materials.urdf.xacro" />
   <xacro:include filename="$(find lego_spike_description)/urdf/lego_hub.urdf.xacro" />
   <xacro:include filename="$(find lego_spike_description)/urdf/lego_base_plate.urdf.xacro" />

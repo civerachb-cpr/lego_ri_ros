@@ -9,6 +9,12 @@ catkin_package(
 include_directories(
 )
 
-install(DIRECTORY urdf meshes
+install(DIRECTORY config meshes urdf
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+install(FILES
+  scripts/env_run
+  scripts/env_run.bat
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

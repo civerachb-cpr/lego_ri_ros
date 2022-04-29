@@ -15,7 +15,12 @@
         <material name="lego_white" />
         <origin xyz="${lego_stud_spacing} 0 -${lego_stud_spacing * 1.5}" rpy="1.5707963267948966 0 1.5707963267948966" />
       </visual>
-      <!-- TODO: collision -->
+      <collision>
+        <geometry>
+          <box size="${lego_stud_spacing * 3} ${lego_stud_spacing * 3} ${lego_stud_spacing * 3}" />
+        </geometry>
+        <origin xyz="${lego_stud_spacing * 1} 0 0" rpy="0 0 0" />
+      </collision>
     </link>
     <joint name="color_${port}_joint" type="fixed">
       <parent link="${parent}" />

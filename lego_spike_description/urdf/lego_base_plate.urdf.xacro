@@ -15,6 +15,12 @@
         <material name="lego_teal" />
         <origin xyz="-${lego_stud_spacing*1.5} -${lego_stud_spacing/2} 0" rpy="1.5707963267948966 0 -1.5707963267948966" />
       </visual>
+      <collision>
+        <geometry>
+          <box size="${lego_stud_spacing * 19} ${lego_stud_spacing * 11} ${lego_stud_spacing}" />
+        </geometry>
+        <origin xyz="0 0 ${lego_brick_width/2}" rpy="0 0 0" />
+      </collision>
     </link>
     <joint name="${name}_joint" type="fixed">
       <parent link="${parent}" />

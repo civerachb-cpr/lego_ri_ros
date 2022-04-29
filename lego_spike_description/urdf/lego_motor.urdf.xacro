@@ -15,7 +15,12 @@
         <material name="lego_white" />
         <origin xyz="${lego_stud_spacing/2} 0.0045 0" rpy="1.5707963267948966 0 1.5707963267948966" />
       </visual>
-      <!-- TODO: collision -->
+      <collision>
+        <geometry>
+          <box size="${lego_stud_spacing * 9} ${lego_stud_spacing * 3} ${lego_stud_spacing * 3}" />
+        </geometry>
+        <origin xyz="0 0 ${lego_stud_spacing * 1.5}" rpy="0 0 0" />
+      </collision>
     </link>
     <joint name="motor_${port}_joint" type="fixed">
       <parent link="${parent}" />
@@ -23,7 +28,14 @@
       <xacro:insert_block name="origin" />
     </joint>
 
-    <link name="motor_${port}_wheel_link" />
+    <link name="motor_${port}_wheel_link">
+      <collision>
+        <geometry>
+          <cylinder radius="${lego_stud_spacing * 1.5}" length="${lego_stud_spacing}" />
+        </geometry>
+        <origin xyz="0 0 -${lego_stud_spacing * 0.5}" rpy="0 0 0" />
+      </collision>
+    </link>
     <joint name="motor_${port}_wheel_joint" type="continuous">
       <parent link="motor_${port}_link" />
       <child link="motor_${port}_wheel_link" />
