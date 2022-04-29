@@ -16,11 +16,10 @@ Note that the Lego Spike Prime and Lego Mindstorms hardware is interchangeable.
 
 Only one hub per PC is currently supported, though that may change in the future.
 
-![Basic URDF](doc/lego-urdf.png "Basic URDF")
+![Simple Arm](doc/simple_arm_urdf.png "Basic URDF")
 
-The image above shows a simple robot using the 4 motors and 2 sensors included in Lego Mindstors Robot Inventor, and
-is included in the `lego_spike_description` package.  Its main purpose is just for debugging, rather than
-demonstrating a practical robot.
+The image above shows a simple robot arm built using components from the Lego Mindstorms Robot Inventor set #51515.
+Building instructions and the URDF for this arm are included in the  `lego_spike_description` package.
 
 NOTE: the STL meshes are currently bugged and have some wonky scale issues I haven't fixed yet.  Don't use them for
 any high-precision tasks yet!
