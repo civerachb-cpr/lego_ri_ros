@@ -16,24 +16,24 @@
     <origin xyz="0.1 0 0" rpy="0 0 0" />
   </xacro:lego_hub>
 
-  <xacro:lego_small_motor name="motor_a" parent="base_link">
+  <xacro:lego_small_motor port="a" parent="base_link">
     <origin xyz="0 0.032 0.008" rpy="0 0 3.14150" />
   </xacro:lego_small_motor>
-  <xacro:lego_small_motor name="motor_b" parent="base_link">
+  <xacro:lego_small_motor port="b" parent="base_link">
     <origin xyz="0 -0.064 0.008" rpy="0 0 3.14150" />
   </xacro:lego_small_motor>
-  <xacro:lego_small_motor name="motor_c" parent="base_link">
+  <xacro:lego_small_motor port="c" parent="base_link">
     <origin xyz="0 0 0.008" rpy="0 0 3.14150" />
   </xacro:lego_small_motor>
-  <xacro:lego_small_motor name="motor_d" parent="base_link">
+  <xacro:lego_small_motor port="d" parent="base_link">
     <origin xyz="0 -0.032 0.008" rpy="0 0 3.14150" />
   </xacro:lego_small_motor>
 
-  <xacro:lego_distance_sensor name="distance_e" parent="base_link">
+  <xacro:lego_distance_sensor port="e" parent="base_link">
     <origin xyz="-0.016 0.054 0.038" rpy="1.57079 0 3.14150" />
   </xacro:lego_distance_sensor>
 
-  <xacro:lego_color_sensor name="color_f" parent="motor_b_wheel_link">
+  <xacro:lego_color_sensor port="f" parent="motor_b_wheel_link">
     <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:lego_color_sensor>
 </robot>

@@ -1,2 +1,1 @@
-string[] name
-float32[] data
+sensor_msgs/PointCloud[] data

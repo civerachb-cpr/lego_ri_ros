@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
-  <xacro:macro name="lego_distance_sensor" params="name parent *origin">
-    <link name="${name}_link">
+  <xacro:macro name="lego_distance_sensor" params="port parent *origin">
+    <link name="distance_${port}_link">
       <visual>
         <geometry>
           <mesh filename="package://lego_spike_description/meshes/SpikePrimeDistanceSensor.stl" scale="0.0004 0.0004 0.0004"/>
@@ -11,9 +11,9 @@
       </visual>
       <!-- TODO: collision -->
     </link>
-    <joint name="${name}_joint" type="fixed">
+    <joint name="distance_${port}_joint" type="fixed">
       <parent link="${parent}" />
-      <child link="${name}_link" />
+      <child link="distance_${port}_link" />
       <xacro:insert_block name="origin" />
     </joint>
   </xacro:macro>

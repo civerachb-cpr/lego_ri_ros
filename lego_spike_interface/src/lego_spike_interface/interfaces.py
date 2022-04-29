@@ -15,8 +15,11 @@ from lego_spike_msgs.msg import Color
 from lego_spike_msgs.msg import ColorSensors
 from lego_spike_msgs.msg import DistanceSensors
 from lego_spike_msgs.msg import LightPattern
+from geometry_msgs.msg import Point32
+from sensor_msgs.msg import ChannelFloat32
 from sensor_msgs.msg import Imu
 from sensor_msgs.msg import JointState
+from sensor_msgs.msg import PointCloud
 from std_msgs.msg import Header
 from std_msgs.msg import Float32
 
@@ -154,7 +157,6 @@ class LegoInterface:
         clr = ColorSensors()
         clr.name = []
         dst = DistanceSensors()
-        dst.name = []
         dst.data = []
 
         for device in data['devices']:
@@ -172,8 +174,24 @@ class LegoInterface:
                 c.b = device['data']['rgb']['b']
                 clr.data.append(c)
             elif device['type'] == 'distance':
-                dst.name.append('distance_{0}'.format(device['port']))
-                dst.data.append(device['data'])
+                h = Header()
+                h.stamp = rospy.Time.now()
+                h.frame_id = 'distance_{0}'.format(device['port'])
+                pc = PointCloud()
+                pc.header = h
+                points = [Point32()]
+                if device['data'] < 0:
+                    points[0].x = float('NaN')
+                else:
+                    points[0].x = device['data']
+                points[0].y = 0.0
+                points[0].z = 0.0
+                pc.points = points
+                channels = [ChannelFloat32()]
+                channels[0].name = 'distance'
+                channels[0].values = [points[0].x]
+                pc.channels = channels
+                dst.data.append(pc)
 
         self.imu_pub.publish(imu_msg)
         self.temperature_pub.publish(temperature_msg)
