@@ -1,6 +1,9 @@
 Lego Robot Inventor ROS
 =========================
 
+> :warning: This branch is _very_ in-development and is NOT CURRENTLY USABLE.  My current development machine is running
+Ubuntu 18.04, so I haven't been able to install Galactic to do any significant development work (yet!).
+
 This repo contains code needed for operating the Lego Robot Inventor (#51515)
 with ROS.
 
