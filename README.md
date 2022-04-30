@@ -4,17 +4,20 @@ Lego Robot Inventor ROS
 This repo contains code needed for operating the Lego Robot Inventor (#51515)
 with ROS.
 
-Everything is very much in development right now, so don't expect much to
-work yet.
+Everything is very much in development right now, but basic functionality has
+been demonstrated in ROS Noetic running on Ubuntu 20.04.
 
-The intention is that the Mindstorms Hub will operate as a serial device,
-sending and receiving messages over the USB (eventually maybe wi-fi and
-bluetooth too), with the actual ROS data processing being done on the main
-PC.  No ROS-specific code runs on the Mindstorms Hub.
+This project uses the Lego Mindstorms or Lego Spike Prime hub as a serial
+peripheral, with text-based data running between it and the main PC. No
+ROS specific code runs on the Hub itself, allowing easier porting to ROS2
+or other systems.
+
+Currently only one hub per PC is supported, but this may change in the future.
+
+Data published from the serial interface node runs at approximately 20Hz, but
+you may see some variance right now.
 
 Note that the Lego Spike Prime and Lego Mindstorms hardware is interchangeable.
-
-Only one hub per PC is currently supported, though that may change in the future.
 
 ![Simple Arm](doc/simple_arm_urdf.png "Basic URDF")
 
