@@ -4,17 +4,20 @@ Lego Robot Inventor ROS
 This repo contains code needed for operating the Lego Robot Inventor (#51515)
 with ROS.
 
-Everything is very much in development right now, so don't expect much to
-work yet.
+Everything is very much in development right now, but basic functionality has
+been demonstrated in ROS Noetic running on Ubuntu 20.04.
 
-The intention is that the Mindstorms Hub will operate as a serial device,
-sending and receiving messages over the USB (eventually maybe wi-fi and
-bluetooth too), with the actual ROS data processing being done on the main
-PC.  No ROS-specific code runs on the Mindstorms Hub.
+This project uses the Lego Mindstorms or Lego Spike Prime hub as a serial
+peripheral, with text-based data running between it and the main PC. No
+ROS specific code runs on the Hub itself, allowing easier porting to ROS2
+or other systems.
+
+Currently only one hub per PC is supported, but this may change in the future.
+
+Data published from the serial interface node runs at approximately 20Hz, but
+you may see some variance right now.
 
 Note that the Lego Spike Prime and Lego Mindstorms hardware is interchangeable.
-
-Only one hub per PC is currently supported, though that may change in the future.
 
 ![Simple Arm](doc/simple_arm_urdf.png "Basic URDF")
 
@@ -64,11 +67,11 @@ drive.  Both modes are suported by the `cmd/goal_position` topic:
 - to lock the motor, set the effort to -1.0
 
 Note that the speed is expressed as a [-1, 1] value indicating the percentage of maximum design speed; the actual maximum
-speed appears to be undocumented, but if I ever figure it out I'll change it to use real units.
+speed appears to be undocumented, but if I ever figure it out I'll change it to use real units. Overall this implementation
+is a bit clunky, and will likely be improved later on. But it's usable at least, if a little unconventional.
 
-Currently only the position value of `cmd/goal_position` is used; effort and velocity must be set, but are ignored by
-the underlying message-handler.  Motor names should begin with `motor_{a|b|c|d|e|f}` according to the port they are
-attached to.  Multiple motors can be set, but the examples below just show a single one for clarity:
+Motor joint names begin with `motor_{a|b|c|d|e|f}` according to the port they are
+attached to.  Below are several examples of controlling motor behaviour:
 
 Set a motor to the zero position:
 ```
