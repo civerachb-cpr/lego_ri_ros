@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="view_model" default="false" />
-
   <arg name="config" default="arm" />
   <arg name="env_runner" value="$(eval 'env_run' if not optenv('OS', 'unknown').lower().startswith('windows') else 'env_run.bat')" />
 
@@ -21,9 +19,4 @@
   </group>
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
-
-  <group if="$(arg view_model)">
-    <node name="joint_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find lego_spike_description)/config/lego.rviz" />
-  </group>
 </launch>
