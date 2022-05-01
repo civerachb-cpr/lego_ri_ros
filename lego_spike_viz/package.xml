@@ -10,6 +10,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <depend>joint_state_publisher_gui</depend>
   <depend>lego_spike_description</depend>
   <depend>lego_spike_msgs</depend>
   <depend>rviz</depend>

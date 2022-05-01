@@ -9,6 +9,8 @@
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>joint_state_publisher</depend>
   <depend>xacro</depend>
 
   <export>
