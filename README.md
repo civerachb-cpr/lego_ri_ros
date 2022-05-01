@@ -67,11 +67,11 @@ drive.  Both modes are suported by the `cmd/goal_position` topic:
 - to lock the motor, set the effort to -1.0
 
 Note that the speed is expressed as a [-1, 1] value indicating the percentage of maximum design speed; the actual maximum
-speed appears to be undocumented, but if I ever figure it out I'll change it to use real units.
+speed appears to be undocumented, but if I ever figure it out I'll change it to use real units. Overall this implementation
+is a bit clunky, and will likely be improved later on. But it's usable at least, if a little unconventional.
 
-Currently only the position value of `cmd/goal_position` is used; effort and velocity must be set, but are ignored by
-the underlying message-handler.  Motor names should begin with `motor_{a|b|c|d|e|f}` according to the port they are
-attached to.  Multiple motors can be set, but the examples below just show a single one for clarity:
+Motor joint names begin with `motor_{a|b|c|d|e|f}` according to the port they are
+attached to.  Below are several examples of controlling motor behaviour:
 
 Set a motor to the zero position:
 ```
