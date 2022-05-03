@@ -11,7 +11,7 @@ Distance and Color sensors have their sensing apparatus pointed along the positi
 
 
 Usage
-=======
+------
 
 You must include the `lego_materials.urdf.xacro` file in addition to any specific components your robot needs.
 For convenience, `lego_dimensions.urdf.xacro` contains additional properties to help align URDF components with
