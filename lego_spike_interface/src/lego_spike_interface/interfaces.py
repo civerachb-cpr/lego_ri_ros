@@ -25,6 +25,8 @@ from std_msgs.msg import Float32
 
 from lego_spike_interface.command import CommandList
 
+from math import pi
+
 from catkin.find_in_workspaces import find_in_workspaces as catkin_find
 
 ctrl_c = b"\x03"
@@ -136,9 +138,9 @@ class LegoInterface:
         hdr.frame_id = self.imu_frame_id
         imu_msg = Imu()
         imu_msg.header = hdr
-        imu_msg.angular_velocity.x = data['imu']['angular']['x']
-        imu_msg.angular_velocity.y = data['imu']['angular']['y']
-        imu_msg.angular_velocity.z = data['imu']['angular']['z']
+        imu_msg.angular_velocity.x = data['imu']['angular']['x'] * pi / 180.0  # deg2rad
+        imu_msg.angular_velocity.y = data['imu']['angular']['y'] * pi / 180.0  # deg2rad
+        imu_msg.angular_velocity.z = data['imu']['angular']['z'] * pi / 180.0  # deg2rad
         imu_msg.linear_acceleration.x = data['imu']['linear']['x']
         imu_msg.linear_acceleration.y = data['imu']['linear']['y']
         imu_msg.linear_acceleration.z = data['imu']['linear']['z']

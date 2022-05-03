@@ -8,8 +8,6 @@ Once per loop it accepts input from STDIN for processing
 
 import hub
 
-from math import pi
-
 running_pattern = [
     9,0,7,0,5,
     0,0,8,0,6,
@@ -178,9 +176,9 @@ def read_gyro():
     status = hub.status()
     return {
         'angular': {
-            'x': status['gyroscope'][0] * pi / 180.0,
-            'y': status['gyroscope'][1] * pi / 180.0,
-            'z': status['gyroscope'][2] * pi / 180.0
+            'x': status['gyroscope'][0],
+            'y': status['gyroscope'][1],
+            'z': status['gyroscope'][2]
         },
         'linear': {
             # reported in cm/s^2

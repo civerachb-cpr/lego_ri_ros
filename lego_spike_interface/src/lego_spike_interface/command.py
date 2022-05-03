@@ -43,4 +43,6 @@ class CommandList:
             # clear, but we already have the lock!
             self.actions = []
             self.parameters = []
+        else:
+            interface.write_line('')  # write an empty line so there's something to receive on the other end
         self.mutex.release()
