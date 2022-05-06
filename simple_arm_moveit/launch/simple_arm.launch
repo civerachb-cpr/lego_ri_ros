@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<launch>
+  <!--<node name="simple_arm_moveit_controller" pkg="simple_arm_moveit" type="simple_arm_moveit_controller" />-->
+
+  <include file="$(find simple_arm_moveit)/launch/ros_controllers.launch" />
+  <include file="$(find simple_arm_moveit)/launch/move_group.launch" />
+</launch>

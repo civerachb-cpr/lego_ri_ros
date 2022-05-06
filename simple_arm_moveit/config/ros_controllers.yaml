@@ -28,10 +28,9 @@ controller_list:
       - motor_b_wheel_joint
       - motor_d_wheel_joint
       - motor_c_wheel_joint
-
-#  - name: gripper
-#    action_ns: follow_joint_trajectory
-#    default: True
-#    type: GripperCommand
-#    joints:
-#      - motor_a_wheel_joint
+  - name: gripper
+    action_ns: follow_joint_trajectory
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - motor_a_wheel_joint

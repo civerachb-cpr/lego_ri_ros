@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+"""
+A simple node that sits between the lego_spike_interface and moveit to allow the FollowJointTrajectory controller
+to interact with the arm and gripper
+"""
+
+import rospy
+
+from actionlib_msgs.msg import GoalID, GoalStatusArray
+from control_msgs.msg import FollowJointTrajectoryActionFeedback, FollowJointTrajectoryActionResult
+from sensor_msgs.msg import JointState
+
+def cancel_callback(data, controller):
+    controller.cancel_callback(data)
+
+class LegoJointsController:
+    def __init__(self, ns=''):
+        self.cancel_sub = rospy.Subscriber('{0}/follow_joint_trajectory/cancel'.format(ns), GoalID, cancel_callback, self)
+
+        self.feedback_pub = rospy.Publisher('{0}/follow_joint_trajectory/feedback'.format(ns), FollowJointTrajectoryActionFeedback, queue_size=1)
+        self.result_pub = rospy.Publisher('{0}/follow_joint_trajectory/result'.format(ns), FollowJointTrajectoryActionResult, queue_size=1)
+        self.status_pub = rospy.Publisher('{0}/follow_joint_trajectory/status'.format(ns), GoalStatusArray, queue_size=1)
+
+    def cancel_callback(self, data):
+        pass
+
+rospy.init_node('simple_arm_moveit_controller')
+arm_controller = LegoJointsController('simple_arm')
+hand_controller = LegoJointsController('gripper')
+
+rospy.spin()

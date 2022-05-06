@@ -8,4 +8,4 @@ moveit_setup_assistant_config:
   CONFIG:
     author_name: Chris Iverach-Brereton
     author_email: civerachb@clearpathrobotics.com
-    generated_timestamp: 1651847267
+    generated_timestamp: 1651879784
