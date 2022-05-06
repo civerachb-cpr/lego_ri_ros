@@ -16,7 +16,7 @@
   </xacro:lego_base_plate>
 
   <xacro:lego_hub name="lego_hub" parent="base_plate_top_link">
-    <origin xyz="-${lego_stud_spacing * 6} 0 0" rpy="0 0 -${pi/2}" />
+    <origin xyz="-${lego_stud_spacing * 6} 0 ${lego_stud_spacing * 1}" rpy="0 0 -${pi/2}" />
   </xacro:lego_hub>
 
   <xacro:lego_motor port="b" parent="base_plate_top_link">
@@ -109,13 +109,13 @@
         <mesh filename="package://lego_spike_description/meshes/mobile_fingers.stl" scale="0.0004 0.0004 0.0004"/>
       </geometry>
       <material name="lego_black" />
-      <origin xyz="${lego_stud_spacing * 0.5} ${lego_stud_spacing * 2.5} -${lego_stud_spacing * 2}" rpy="${pi/2} -${pi/2} ${pi/2}" />
+      <origin xyz="-${lego_stud_spacing * 3} ${lego_stud_spacing * 4.5} -${lego_stud_spacing * 1.5}" rpy="${pi/2} -${pi/2} ${pi/2}" />
     </visual>
     <collision>
       <geometry>
         <mesh filename="package://lego_spike_description/meshes/mobile_fingers.stl" scale="0.0004 0.0004 0.0004"/>
       </geometry>
-      <origin xyz="${lego_stud_spacing * 0.5} ${lego_stud_spacing * 2.5} -${lego_stud_spacing * 2}" rpy="${pi/2} -${pi/2} ${pi/2}" />
+      <origin xyz="-${lego_stud_spacing * 3} ${lego_stud_spacing * 4.5} -${lego_stud_spacing * 1.5}" rpy="${pi/2} -${pi/2} ${pi/2}" />
     </collision>
   </link>
   <joint name="mobile_finger_joint" type="fixed">
